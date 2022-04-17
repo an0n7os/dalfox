@@ -1,0 +1,80 @@
+project_name: dalfox
+
+before:
+  hooks:
+  - go mod download
+
+builds:
+  -
+    main: .
+    binary: dalfox
+    goos:
+      - windows
+      - linux
+      - darwin
+      - freebsd
+    goarch:
+      - amd64
+      - 386
+      - arm
+      - arm64
+    goarm:
+      - 6
+    ignore:
+      - goos: darwin
+        goarch: 386
+      - goos: darwin
+        goarch: arm
+      - goos: windows
+        goarch: 386
+      - goos: windows
+        goarch: arm
+      - goos: windows
+        goarch: arm64
+
+checksum:
+  name_template: "{{ .ProjectName }}_checksums.txt"
+
+changelog:
+  sort: desc
+  filters:
+    exclude:
+    - '^MERGE'
+    - "{{ .Tag }}"
+
+release:
+  github:
+    owner: hahwul
+    name: dalfox
+
+brews:
+  -
+    name: dalfox
+    tap:
+      owner: hahwul
+      name: homebrew-dalfox
+    url_template: "https://github.com/hahwul/dalfox/releases/download/{{ .Tag }}/{{ .ArtifactName }}"
+    commit_author:
+      name: hahwul
+      email: hahwul@gmail.com
+    folder: Formula
+    homepage: "https://www.hahwul.com"
+    description: "DalFox(Finder Of XSS) / Parameter Analysis and XSS Scanning tool based on golang"
+    test: |
+      system "#{bin}/dalfox version"
+    install: |
+      bin.install "dalfox"
+snapcrafts:
+  -
+    name: dalfox
+    # Remember you need to `snapcraft login` first.
+    publish: true
+    summary: DalFox(Finder Of XSS) / Parameter Analysis and XSS Scanning tool based on golang
+    description: DalFox is a fast, powerful parameter analysis and XSS scanner, based on a golang/DOM parser. supports friendly Pipeline, CI/CD and testing of different types of XSS. I talk about naming. Dal(달) is the Korean pronunciation of moon and fox was made into Fox(Find Of XSS).
+    grade: stable
+    confinement: strict
+    license: MIT
+
+    apps:
+      dalfox:
+        plugs: ["home","network","network-bind"]
